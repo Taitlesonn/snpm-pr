@@ -10,8 +10,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class JsonControler {
-    public static List<String> get_ip_list(Gson gson){
-        try (Reader reader = new FileReader("json/file/IpIndex.json")){
+    public static List<String> get_ip_list(Gson gson, String path){
+        try (Reader reader = new FileReader(path + "\\src\\main\\java\\main\\json\\file\\IpIndex.json")){
             Type listType = new TypeToken<List<String>>(){}.getType();
             return gson.fromJson(reader, listType);
         }catch (Exception e){
@@ -20,8 +20,8 @@ public class JsonControler {
         return null;
     }
 
-    public static int[] get_oids(Gson gson){
-        try (Reader reader = new FileReader("json/file/OidsIndex.json")){
+    public static int[] get_oids(Gson gson, String path){
+        try (Reader reader = new FileReader(path + "\\src\\main\\java\\main\\json\\file\\OidsIndex.json")){
             Type listType = new TypeToken<List<Integer>>(){}.getType();
             return gson.fromJson(reader, listType);
         }catch (Exception e){
@@ -30,8 +30,8 @@ public class JsonControler {
         return null;
     }
 
-    public static String[] get_oids_list(Gson gson){
-        try (Reader reader = new FileReader("json/file/ListOfoids_number")){
+    public static String[] get_oids_list(Gson gson, String path){
+        try (Reader reader = new FileReader(path + "\\src\\main\\java\\main\\json\\file\\ListOfoids_number")){
             Type listType = new TypeToken<List<String>>(){}.getType();
             return gson.fromJson(reader, listType);
         }catch (Exception e){

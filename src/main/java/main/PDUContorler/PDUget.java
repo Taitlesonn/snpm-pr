@@ -29,7 +29,7 @@ public class PDUget {
     }
 
 
-    public static void get(Address address, Snmp snmp, int[] id, String Comunity_string, Gson gson) throws IOException {
+    public static void get(Address address, Snmp snmp, int[] id, String Comunity_string, Gson gson, String path) throws IOException {
         // Create a new CommunityTarget object to define the SNMP target
         CommunityTarget<Address> target = new CommunityTarget<>();
 
@@ -52,7 +52,7 @@ public class PDUget {
         // Creating PDU get
         PDU pdu = new PDU();
 
-        String[] oids = JsonControler.get_oids_list(gson);
+        String[] oids = JsonControler.get_oids_list(gson, path);
         int lengh = oids.length;
 
         for (int i : id) {

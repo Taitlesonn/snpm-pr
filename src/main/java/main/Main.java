@@ -7,8 +7,9 @@ import org.snmp4j.smi.GenericAddress;
 
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.file.Paths;
+import java.util.Objects;
+
 
 public class Main {
 
@@ -24,12 +25,13 @@ public class Main {
 
 
         Gson gson = new Gson();
+        String path = Paths.get("").toAbsolutePath().toString();
 
         new Thread(() -> {
             while (true) {
-                for (String address : JsonControler.get_ip_list(gson)) {
+                for (String address : Objects.requireNonNull(JsonControler.get_ip_list(gson, path))) {
                     try {
-                        PDUget.get(GenericAddress.parse(address), udpControler.getSnmp(), JsonControler.get_oids(gson), "public", gson);
+                        PDUget.get(GenericAddress.parse(address), udpControler.getSnmp(), Objects.requireNonNull(JsonControler.get_oids(gson, path)), "public", gson, path);
                     } catch (IOException e) {
                         System.err.println("Error sending GET to:" + address);
                         e.printStackTrace();
