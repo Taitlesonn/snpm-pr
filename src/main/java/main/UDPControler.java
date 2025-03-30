@@ -13,74 +13,62 @@ public class UDPControler {
     private TransportMapping<UdpAddress> transport;
     private Snmp snmp;
 
+
     private void init() throws IOException {
         try {
-            //Enabling listening on all interfaces on port 161-udp
+            // Listen on all interfaces on UDP port 161
             this.listenAddress = GenericAddress.parse("udp:0.0.0.0/161");
 
             // Create a transport mapping instance:
-            // We use DefaultUdpTransportMapping, which implements UdpTransportMapping.
             this.transport = new DefaultUdpTransportMapping((UdpAddress) this.listenAddress);
 
-            // Initialize the SNMP root object with the passed transport.
+            // Initialize the SNMP object with the given transport.
             this.snmp = new Snmp(this.transport);
 
-            // Registering a Command Responder that will respond to incoming requests.
+            // Register a CommandResponder to handle incoming requests.
             this.snmp.addCommandResponder(new CommandResponder() {
                 @Override
-                public <A extends Address> void processPdu(CommandResponderEvent<A> commandResponderEvent) {
+                public void processPdu(CommandResponderEvent commandResponderEvent) {
+                    System.out.println("Processing PDU...");
                     PDU pdu = commandResponderEvent.getPDU();
 
-                    // If PDU is null, we do not continue processing.
+                    // If PDU is null, do not proceed.
                     if (pdu == null) {
                         return;
                     }
 
-                    // Getting the sender's address.
-                    A peerAddress = commandResponderEvent.getPeerAddress();
+                    // Retrieve the sender's address.
+                    Address peerAddress = commandResponderEvent.getPeerAddress();
 
                     switch (pdu.getType()) {
                         case PDU.GET -> {
-                            //Implementation of data reading logic from MIB for GET.
-
-                            break;
+                            // Implementation of reading data from MIB for GET.
                         }
                         case PDU.GETNEXT -> {
-                            // Implementation of MIB tree traversal logic.
-
-                            break;
+                            // Implementation of MIB tree traversal.
                         }
                         case PDU.SET -> {
-                            // Implementation of MIB tree traversal logic.
-
-                            break;
+                            // Implementation of setting values in MIB.
                         }
                         default -> {
-                            // Unsupported PDU type:
-                            break;
+                            // Unsupported PDU type.
                         }
                     }
 
-                    try {
-                        // Start listening – open network socket.
-                        transport.listen();
-                        System.out.println("SNMP Server is lisinig on Address");
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-
+                    // NOTE: We do not call transport.listen() here because the listening is started once during initialization.
+                    System.out.println("Processing completed.");
                 }
-
-
             });
+
+            // Start listening - should be called once during initialization.
+            this.transport.listen();
+            System.out.println("SNMP Server is listening on address: " + this.listenAddress);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
+
 
     public void start() throws IOException {
         try {
