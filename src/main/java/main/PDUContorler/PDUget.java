@@ -1,5 +1,7 @@
 package main.PDUContorler;
 
+import com.google.gson.Gson;
+import main.json.JsonControler;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
@@ -27,7 +29,7 @@ public class PDUget {
     }
 
 
-    public static void get(Address address, Snmp snmp, int[] id) throws IOException {
+    public static void get(Address address, Snmp snmp, int[] id, String Comunity_string, Gson gson) throws IOException {
         // Create a new CommunityTarget object to define the SNMP target
         CommunityTarget<Address> target = new CommunityTarget<>();
 
@@ -35,7 +37,7 @@ public class PDUget {
         target.setAddress(address);
 
         // Set the community string for authentication (commonly "public" for read-only access)
-        target.setCommunity(new OctetString("public"));
+        target.setCommunity(new OctetString(Comunity_string));
 
         // Set the number of retries in case the request fails (2 retries)
         target.setRetries(2);
@@ -50,7 +52,7 @@ public class PDUget {
         // Creating PDU get
         PDU pdu = new PDU();
 
-        String[] oids = PDUget.get_oids();
+        String[] oids = JsonControler.get_oids_list(gson);
         int lengh = oids.length;
 
         for (int i : id) {
@@ -79,6 +81,13 @@ public class PDUget {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
 
     }
 }

@@ -2,13 +2,16 @@ package main;
 
 
 import main.PDUContorler.PDUget;
+import main.json.JsonControler;
 import org.snmp4j.smi.GenericAddress;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) throws IOException, InterruptedException {
         UDPControler udpControler = new UDPControler();
         new Thread(() -> {
@@ -19,31 +22,20 @@ public class Main {
             }
         }).start();
 
-        //Lista adresów puki co bez bazy danych adresów
-        List<String> snmpAddress = Arrays.asList(
-                "udp:10.10.10.2/161",
-                "udp:10.10.10.3/161"
-        );
 
-        int[] oidsToFetch = {0, 1, 2, 3, 4, 5, 6};
-
+        Gson gson = new Gson();
 
         new Thread(() -> {
             while (true) {
-                for (String address : snmpAddress) {
+                for (String address : JsonControler.get_ip_list(gson)) {
                     try {
-                        PDUget.get(GenericAddress.parse(address), udpControler.getSnmp(), oidsToFetch);
+                        PDUget.get(GenericAddress.parse(address), udpControler.getSnmp(), JsonControler.get_oids(gson), "public", gson);
                     } catch (IOException e) {
                         System.err.println("Error sending GET to:" + address);
                         e.printStackTrace();
                     }
                 }
 
-                try {
-                    Thread.sleep(6000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
         }).start();
 

@@ -4,14 +4,21 @@ This is a simple SNMP server project developed in Java. It is designed to run on
 
 ## Project Structure
 
-The main class of the project is located in the `Main` class, where the SNMP server starts and other necessary components (like `UDPControler` and `PDUget`) are invoked to handle the SNMP communication. The `UDPControler` class is responsible for initializing the SNMP server and managing incoming requests, while `PDUget` contains the logic for sending `GET` requests to specified SNMP agents.
+- **Main.java**: The entry point of the application where the SNMP server is started and periodic `GET` requests are sent.
+- **UDPControler.java**: Handles the SNMP communication setup and manages the listening process.
+- **PDUget.java**: Contains methods for sending SNMP `GET` requests and processing the responses.
+- **JsonControler.java**: A new class that reads configuration from JSON files. In these files, you now define:
+   - The IP addresses to be scanned.
+   - The indexes for OIDs.
+   - The list of OIDs themselves.
 
 ## Features
 
 - **SNMPv2c** support.
 - Periodically fetch system data from remote devices using SNMP `GET` requests.
 - Handles multiple SNMP agents with customizable OIDs for data retrieval.
-- Configurable SNMP community string (default: "public").
+- Configurable SNMP community string (default: `"public"`).
+- **JSON-based configuration:** Configure target IPs, OID indexes, and OID lists via external JSON files using the new `JsonControler` class.
 
 ## Requirements
 
@@ -41,11 +48,21 @@ The main class of the project is located in the `Main` class, where the SNMP ser
 
 ## Configuration
 
-- You can modify the list of SNMP agent addresses in the `Main` class (currently hardcoded as `udp:10.10.10.2/161` and `udp:10.10.10.3/161`).
-- The SNMP community string is set to `"public"`, but this can be changed by updating the `OctetString("public")` in the code.
+- **SNMP Agents:**  
+  The list of SNMP agent addresses was previously hardcoded (e.g., `udp:10.10.10.2/161` and `udp:10.10.10.3/161`).  
+  Now, you can define the target IP addresses along with the OID indexes and the list of OIDs in external JSON configuration files. The `JsonControler` class is responsible for reading these files.
 
-## Project Files
+- **SNMP Community String:**  
+  The community string is set to `"public"` by default, but it can be changed in the code by updating the parameter in the call to `PDUget.get(...)`.
 
-- **Main.java**: The entry point of the application where the SNMP server is started, and periodic `GET` requests are sent.
-- **UDPControler.java**: Handles the SNMP communication setup and manages the listening process.
-- **PDUget.java**: Contains methods for sending SNMP `GET` requests and processing the responses.
+
+## Project Files Overview
+
+- **Main.java**: Entry point for starting the SNMP server and triggering periodic `GET` requests.
+- **UDPControler.java**: Manages SNMP communication and handles incoming requests.
+- **PDUget.java**: Implements methods to send SNMP `GET` requests and process responses.
+- **JsonControler.java**: Reads JSON configuration files to load SNMP agent details, including IP addresses, OID indexes, and OID lists.
+
+---
+
+If you have any questions or need further assistance, feel free to ask!
