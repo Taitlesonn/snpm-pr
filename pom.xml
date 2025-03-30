@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>main</groupId>
-    <artifactId>snpm-pr</artifactId>
+    <artifactId>snmp-pr</artifactId>
     <version>1.1</version>
 
     <properties>
@@ -25,6 +25,7 @@
 
     <build>
         <plugins>
+            <!-- Maven Shade Plugin for creating an uber JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -38,10 +39,21 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <shadedArtifactAttached>false</shadedArtifactAttached>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
+            </plugin>
+
+            <!-- Maven Jar Plugin to specify the main class in the manifest -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
                     <archive>
-                        <manifest>
-                            <mainClass>main.Main</mainClass>
-                        </manifest>
+                        <manifestEntries>
+                            <Main-Class>main.Main</Main-Class> <!-- Correctly specify your main class here -->
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
