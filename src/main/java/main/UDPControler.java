@@ -14,7 +14,7 @@ public class UDPControler {
     private Snmp snmp;
 
     private void init() throws IOException {
-        try{
+        try {
             //Enabling listening on all interfaces on port 161-udp
             this.listenAddress = GenericAddress.parse("udp:0.0.0.0/161");
 
@@ -32,19 +32,21 @@ public class UDPControler {
                     PDU pdu = commandResponderEvent.getPDU();
 
                     // If PDU is null, we do not continue processing.
-                    if (pdu == null){return;}
+                    if (pdu == null) {
+                        return;
+                    }
 
                     // Getting the sender's address.
                     A peerAddress = commandResponderEvent.getPeerAddress();
 
-                    switch (pdu.getType()){
+                    switch (pdu.getType()) {
                         case PDU.GET -> {
                             //Implementation of data reading logic from MIB for GET.
 
                             break;
                         }
                         case PDU.GETNEXT -> {
-                           // Implementation of MIB tree traversal logic.
+                            // Implementation of MIB tree traversal logic.
 
                             break;
                         }
@@ -73,7 +75,7 @@ public class UDPControler {
 
             });
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -81,18 +83,18 @@ public class UDPControler {
     }
 
     public void start() throws IOException {
-        try{
+        try {
             this.init();
 
-            while (true){
+            while (true) {
                 Thread.sleep(500);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public Snmp getSnmp(){
+    public Snmp getSnmp() {
         return this.snmp;
     }
 }
