@@ -14,6 +14,7 @@ public class UDPControler {
     private Snmp snmp;
 
 
+
     private void init() throws IOException {
         try {
             // Listen on all interfaces on UDP port 161
@@ -73,10 +74,7 @@ public class UDPControler {
     public void start() throws IOException {
         try {
             this.init();
-
-            while (true) {
-                Thread.sleep(500);
-            }
+            Thread.sleep(500);
         } catch (Exception e) {
             e.printStackTrace();
         }
