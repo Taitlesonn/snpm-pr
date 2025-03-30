@@ -41,7 +41,7 @@ The main class of the project is located in the `Main` class, where the SNMP ser
 
 ## Configuration
 
-- You can modify the list of SNMP agent addresses in the `Main` class (currently hardcoded as `udp:192.168.1.1/161` and `udp:192.168.1.2/161`).
+- You can modify the list of SNMP agent addresses in the `Main` class (currently hardcoded as `udp:10.10.10.2/161` and `udp:10.10.10.3/161`).
 - The SNMP community string is set to `"public"`, but this can be changed by updating the `OctetString("public")` in the code.
 
 ## Project Files

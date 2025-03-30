@@ -21,8 +21,8 @@ public class Main {
 
         //Lista adresów puki co bez bazy danych adresów
         List<String> snmpAddress = Arrays.asList(
-                "udp:10.10.10.1/161",
-                "udp:10.10.10.2/161"
+                "udp:10.10.10.2/161",
+                "udp:10.10.10.3/161"
         );
 
         int[] oidsToFetch = {0, 1, 2, 3, 4, 5, 6};
