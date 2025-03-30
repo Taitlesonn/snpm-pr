@@ -31,22 +31,7 @@ public class PDUget {
 
     public static void get(Address address, Snmp snmp, int[] id, String Comunity_string, Gson gson, String path) throws IOException {
         // Create a new CommunityTarget object to define the SNMP target
-        CommunityTarget<Address> target = new CommunityTarget<>();
-
-        // Set the address of the SNMP agent (device)
-        target.setAddress(address);
-
-        // Set the community string for authentication (commonly "public" for read-only access)
-        target.setCommunity(new OctetString(Comunity_string));
-
-        // Set the number of retries in case the request fails (2 retries)
-        target.setRetries(2);
-
-        // Set the timeout in seconds for receiving a response (2 seconds)
-        target.setTimeout(2);
-
-        // Set the SNMP version (SNMPv2c in this case)
-        target.setVersion(SnmpConstants.version2c);
+        CommunityTarget<Address> target = getTarget(address, Comunity_string);
 
 
         // Creating PDU get
@@ -89,5 +74,25 @@ public class PDUget {
         }
 
 
+    }
+
+    private static CommunityTarget<Address> getTarget(Address address, String Comunity_string) {
+        CommunityTarget<Address> target = new CommunityTarget<>();
+
+        // Set the address of the SNMP agent (device)
+        target.setAddress(address);
+
+        // Set the community string for authentication (commonly "public" for read-only access)
+        target.setCommunity(new OctetString(Comunity_string));
+
+        // Set the number of retries in case the request fails (2 retries)
+        target.setRetries(2);
+
+        // Set the timeout in seconds for receiving a response (2 seconds)
+        target.setTimeout(2);
+
+        // Set the SNMP version (SNMPv2c in this case)
+        target.setVersion(SnmpConstants.version2c);
+        return target;
     }
 }
