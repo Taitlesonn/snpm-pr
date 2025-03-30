@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.FileReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 public class JsonControler {
@@ -23,7 +24,11 @@ public class JsonControler {
     public static int[] get_oids(Gson gson, String path){
         try (Reader reader = new FileReader(path + "\\src\\main\\java\\main\\json\\file\\OidsIndex.json")){
             Type listType = new TypeToken<List<Integer>>(){}.getType();
-            return gson.fromJson(reader, listType);
+             List<Integer> l = gson.fromJson(reader, listType);
+            int[] intArray = Arrays.stream(l.toArray(new Integer[0]))
+                    .mapToInt(Integer::intValue)
+                    .toArray();
+            return intArray;
         }catch (Exception e){
             e.printStackTrace();
         }
