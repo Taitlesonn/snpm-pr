@@ -2,7 +2,6 @@ package main;
 
 
 import main.PDUContorler.PDUget;
-import main.PDUContorler.System_l;
 import main.json.JsonControler;
 import org.snmp4j.smi.GenericAddress;
 
@@ -38,9 +37,12 @@ public class Main {
                 for (String address : Objects.requireNonNull(JsonControler.get_ip_list(gson, path))) {
                     try {
                         PDUget.get(GenericAddress.parse(address), udpControler.getSnmp(), Objects.requireNonNull(JsonControler.get_oids(gson, path)), "public", gson, path);
+                        Thread.sleep(1000);
                     } catch (IOException e) {
                         System.err.println("Error sending GET to:" + address);
                         e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                 }
 

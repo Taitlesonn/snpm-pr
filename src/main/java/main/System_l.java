@@ -1,4 +1,4 @@
-package main.PDUContorler;
+package main;
 
 public class System_l {
     private static boolean type;

@@ -3,7 +3,7 @@ package main.json;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import main.PDUContorler.System_l;
+import main.System_l;
 
 import java.io.FileReader;
 import java.io.Reader;
