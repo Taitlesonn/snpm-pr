@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         System_l.init(); // Checking the system
 
         UDPControler udpControler = new UDPControler();
