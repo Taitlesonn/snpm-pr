@@ -36,7 +36,7 @@ public class JsonControler {
     }
 
     public static String[] get_oids_list(Gson gson, String path){
-        try (Reader reader = new FileReader(path + "\\src\\main\\java\\main\\json\\file\\ListOfoids_number")){
+        try (Reader reader = new FileReader(path + "\\src\\main\\java\\main\\json\\file\\ListOfoids_number.json")){
             Type listType = new TypeToken<List<String>>(){}.getType();
             return gson.fromJson(reader, listType);
         }catch (Exception e){
