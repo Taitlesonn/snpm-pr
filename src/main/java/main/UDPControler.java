@@ -7,11 +7,13 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 public class UDPControler {
     private Address listenAddress;
     private TransportMapping<UdpAddress> transport;
     private Snmp snmp;
+    private CountDownLatch initLatch = new CountDownLatch(1);
 
 
 
@@ -71,10 +73,11 @@ public class UDPControler {
     }
 
 
+
     public void start() throws IOException {
         try {
             this.init();
-            Thread.sleep(500);
+            initLatch.countDown(); // signal that initialization is complete
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,5 +85,9 @@ public class UDPControler {
 
     public Snmp getSnmp() {
         return this.snmp;
+    }
+
+    public void awaitInitialization() throws InterruptedException {
+        initLatch.await();
     }
 }
