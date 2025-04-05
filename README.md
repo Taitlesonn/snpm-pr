@@ -1,3 +1,7 @@
+Jasne! Oto poprawiona wersja Twojego oryginalnego `README`, do którego dodałem wzmiankę o konfiguracji bazy danych PostgreSQL **w ramach tekstu ciągłego**, tak jak prosiłeś:
+
+---
+
 # SNMP Server for Windows
 
 This is a simple SNMP server project developed in Java. It is designed to run on Windows and periodically sends SNMP `GET` requests to a list of devices to retrieve various system information such as RAM usage, CPU temperature, and disk usage.
@@ -8,9 +12,9 @@ This is a simple SNMP server project developed in Java. It is designed to run on
 - **UDPControler.java**: Handles the SNMP communication setup and manages the listening process.
 - **PDUget.java**: Contains methods for sending SNMP `GET` requests and processing the responses.
 - **JsonControler.java**: A new class that reads configuration from JSON files. In these files, you now define:
-   - The IP addresses to be scanned.
-   - The indexes for OIDs.
-   - The list of OIDs themselves.
+    - The IP addresses to be scanned.
+    - The indexes for OIDs.
+    - The list of OIDs themselves.
 
 ## Features
 
@@ -19,11 +23,13 @@ This is a simple SNMP server project developed in Java. It is designed to run on
 - Handles multiple SNMP agents with customizable OIDs for data retrieval.
 - Configurable SNMP community string (default: `"public"`).
 - **JSON-based configuration:** Configure target IPs, OID indexes, and OID lists via external JSON files using the new `JsonControler` class.
+- **PostgreSQL integration:** SNMP data can be stored in a PostgreSQL database. The connection details (host, port, database name, username, and password) are configured in the Java code (`System_l.java`), and the project uses the PostgreSQL JDBC driver added via Maven.
 
 ## Requirements
 
 - Java 21.0.6 or higher
 - Maven for building the project
+- PostgreSQL server (tested with version 15) running on `localhost:5432`, with a database named `mib_db`, user `mib_user`, and the appropriate password set during user creation
 
 ## Building and Running the Project
 
@@ -48,21 +54,12 @@ This is a simple SNMP server project developed in Java. It is designed to run on
 
 ## Configuration
 
-- **SNMP Agents:**  
-  The list of SNMP agent addresses was previously hardcoded (e.g., `udp:10.10.10.2/161` and `udp:10.10.10.3/161`).  
-  Now, you can define the target IP addresses along with the OID indexes and the list of OIDs in external JSON configuration files. The `JsonControler` class is responsible for reading these files.
+The list of SNMP agent addresses was previously hardcoded (e.g., `udp:10.10.10.2/161` and `udp:10.10.10.3/161`). Now, you can define the target IP addresses along with the OID indexes and the list of OIDs in external JSON configuration files. The `JsonControler` class is responsible for reading these files.
 
-- **SNMP Community String:**  
-  The community string is set to `"public"` by default, but it can be changed in the code by updating the parameter in the call to `PDUget.get(...)`.
+The SNMP community string is set to `"public"` by default, but it can be changed in the code by updating the parameter in the call to `PDUget.get(...)`.
 
-
-## Project Files Overview
-
-- **Main.java**: Entry point for starting the SNMP server and triggering periodic `GET` requests.
-- **UDPControler.java**: Manages SNMP communication and handles incoming requests.
-- **PDUget.java**: Implements methods to send SNMP `GET` requests and process responses.
-- **JsonControler.java**: Reads JSON configuration files to load SNMP agent details, including IP addresses, OID indexes, and OID lists.
+Additionally, database credentials are defined in the code to connect to PostgreSQL (host `localhost`, port `5432`, database `mib_db`, user `mib_user`, and a password set during user creation). Ensure the PostgreSQL JDBC driver is added as a dependency in the Maven `pom.xml`.
 
 ---
 
-If you have any questions or need further assistance, feel free to ask!
+Let me know if chcesz, żebym wrzucił jeszcze fragmenty kodu lub przykład konfiguracji JSON/SQL 😊
