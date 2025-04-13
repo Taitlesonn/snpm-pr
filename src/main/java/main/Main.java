@@ -14,7 +14,10 @@ import java.util.Objects;
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
-        System_l.init(); // Checking the system
+        Gson gson = new Gson();
+        String path = Paths.get("").toAbsolutePath().toString();
+
+        System_l.init(path); // Checking the system
 
         UDPControler udpControler = new UDPControler();
         new Thread(() -> {
@@ -29,8 +32,6 @@ public class Main {
         udpControler.awaitInitialization();
 
 
-        Gson gson = new Gson();
-        String path = Paths.get("").toAbsolutePath().toString();
 
         new Thread(() -> {
             while (true) {

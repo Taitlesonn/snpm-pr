@@ -12,7 +12,7 @@ public class System_l {
     private static final String password = "ZAQ!2wsx";
     private static Connection connection;
 
-    public static void init(){
+    public static void init(String path){
         //os
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")){
@@ -33,7 +33,11 @@ public class System_l {
         }
 
         try {
-            Runtime.getRuntime().exec("psql -U mib_user -d mib_db -f sql/mib_init.sql");
+            if (System_l.get_t()){
+                Runtime.getRuntime().exec("psql -U mib_user -d mib_db -f " + path + "sql\\mib_init.sql");
+            }else {
+                Runtime.getRuntime().exec("psql -U mib_user -d mib_db -f " + path + "sql/mib_init.sql");
+            }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
