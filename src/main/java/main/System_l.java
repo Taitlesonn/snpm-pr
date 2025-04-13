@@ -34,9 +34,9 @@ public class System_l {
 
         try {
             if (System_l.get_t()){
-                Runtime.getRuntime().exec("psql -U mib_user -d mib_db -f " + path + "sql\\mib_init.sql");
+                Runtime.getRuntime().exec("psql -U mib_user -d mib_db -f " + path + "\\src\\main\\java\\main\\sql\\mib_init.sql");
             }else {
-                Runtime.getRuntime().exec("psql -U mib_user -d mib_db -f " + path + "sql/mib_init.sql");
+                Runtime.getRuntime().exec("psql -U mib_user -d mib_db -f " + path + "/src/main/java/main/sql/mib_init.sql");
             }
 
         } catch (IOException e) {
