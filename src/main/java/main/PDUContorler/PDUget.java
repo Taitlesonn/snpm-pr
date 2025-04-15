@@ -16,17 +16,6 @@ import java.io.IOException;
 
 public class PDUget {
 
-    public static String[] get_oids() {
-        return new String[]{
-                "1.3.6.1.2.1.1.1.0", //System ditals
-                "1.3.6.1.2.1.1.3.0",  // Uptime
-                "1.3.6.1.2.1.25.2.3.1.5.1", // Memory size
-                "1.3.6.1.4.1.2021.13.16.5.1.2.0", // CPU Temperature (if supported)
-                "1.3.6.1.4.1.2021.9.1.6.1",  // Total disk capacity
-                "1.3.6.1.4.1.2021.9.1.8.1",  // Disk space used
-                "1.3.6.1.4.1.2021.9.1.7.1"   // Free disk space
-        };
-    }
 
 
     public static void get(Address address, Snmp snmp, int[] id, String Comunity_string, Gson gson, String path) throws IOException {
