@@ -1,4 +1,4 @@
-package main.PDUContorler;
+package main.PDUController;
 
 import com.google.gson.Gson;
 import main.json.JsonControler;
@@ -13,110 +13,94 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PDUget {
 
+    /**
+     * Wysyła zapytania SNMP GET w partiach po заданej liczbie OID-ów
+     *
+     * @param address         adres SNMP agent
+     * @param snmp            instancja Snmp
+     * @param indices         tablica indeksów OID-ów do pobrania
+     * @param communityString wspólnota SNMP
+     * @param gson            instancja Gson
+     * @param path            ścieżka do pliku JSON z listą OID-ów
+     */
+    public static void get(Address address,
+                           Snmp snmp,
+                           int[] indices,
+                           String communityString,
+                           Gson gson,
+                           String path) throws IOException {
+        // Przygotowanie targeta SNMP
+        CommunityTarget<Address> target = createTarget(address, communityString);
 
-
-    public static void get(Address address, Snmp snmp, int[] id, String Comunity_string, Gson gson, String path) throws IOException {
-        // Create a new CommunityTarget object to define the SNMP target
-        CommunityTarget<Address> target = getTarget(address, Comunity_string);
-
-
-        // Creating PDU get
-        PDU pdu1 = new PDU();
-        PDU pdu2 = new PDU();
-        PDU pdu3 = new PDU();
-        PDU pdu4 = new PDU();
-
+        // Wczytanie listy OID-ów z JSON-a
         String[] oids = JsonControler.get_oids_list(gson, path);
-        assert oids != null;
-        int lengh = oids.length;
-
-        int cal = 0;
-        int q = 0;
-        if (lengh >= 8){
-            System.err.println("To mach oids");
-        }
-        for (int i : id) {
-            // Checking if it is in the index
-            if (i > lengh || i < 0) {
-                System.out.println("Out of index oid");
-                break;
-            }
-            if (cal == 2){
-                q += 1;
-                cal = 0;
-            }
-            switch (q){
-                case   0 -> {
-                    pdu1.add(new VariableBinding(new OID(oids[i])));
-                }case  1 ->{
-                    pdu2.add(new VariableBinding(new OID(oids[i])));
-                }case  2 -> {
-                    pdu3.add(new VariableBinding(new OID(oids[i])));
-                }case  3 -> {
-                    pdu4.add(new VariableBinding(new OID(oids[i])));
-                }
-            }
-            cal +=1;
-
+        if (oids == null || indices.length == 0) {
+            System.err.println("Brak OID-ów do przetworzenia");
+            return;
         }
 
-        // Sending GET
-        try {
-            for (int i = 0; i < q; i++){
-                ResponseEvent event = null;
-                if (i == 0){
-                     event = snmp.send(pdu1, target);
-                } else if (i == 1) {
-                    event = snmp.send(pdu2, target);
-                } else if (i == 2) {
-                    event = snmp.send(pdu3, target);
-                } else if (i == 3) {
-                    event = snmp.send(pdu4, target);
-                }
+        // Tworzymy listę PDU podzielonych na partie
+        List<PDU> pduList = chunkOidsIntoPdus(oids, indices, batchSize);
 
+        // Wysyłamy każde zapytanie i obsługujemy odpowiedź
+        for (PDU pdu : pduList) {
+            pdu.setType(PDU.GET);
+            try {
+                ResponseEvent event = snmp.send(pdu, target);
                 if (event != null && event.getResponse() != null) {
-                    PDU responserPDU = event.getResponse();
-
-                    for (VariableBinding vb : responserPDU.getVariableBindings()) {
-                        //Implementacja zapisu odpowiediz
+                    for (VariableBinding vb : event.getResponse().getVariableBindings()) {
                         System.out.println(vb.getOid() + " = " + vb.getVariable());
                     }
                 } else {
-                    System.out.println("No response from the SNMP agent or an error occurred form: " + address);
+                    System.err.println("Brak odpowiedzi od agenta SNMP: " + address);
                 }
+            } catch (IOException e) {
+                System.err.println("Błąd podczas wysyłania PDU: " + e.getMessage());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
     }
 
-    private static CommunityTarget<Address> getTarget(Address address, String Comunity_string) {
+    /**
+     * Dzieli listę OID-ów na PDU o określonym rozmiarze
+     */
+    private static List<PDU> chunkOidsIntoPdus(String[] oids, int[] indices, int batchSize) {
+        List<PDU> pduList = new ArrayList<>();
+        PDU currentPdu = new PDU();
+        int count = 0;
+        for (int idx : indices) {
+            if (idx < 0 || idx >= oids.length) {
+                System.err.println("Indeks OID poza zakresem: " + idx);
+                continue;
+            }
+            currentPdu.add(new VariableBinding(new OID(oids[idx])));
+            count++;
+            if (count >= batchSize) {
+                pduList.add(currentPdu);
+                currentPdu = new PDU();
+                count = 0;
+            }
+        }
+        // Dodajemy ostatni PDU, jeśli zawiera zmienne
+        if (currentPdu.getVariableBindings().size() > 0) {
+            pduList.add(currentPdu);
+        }
+        return pduList;
+    }
+
+    /**
+     * Tworzy CommunityTarget na podstawie adresu i wspólnoty
+     */
+    private static CommunityTarget<Address> createTarget(Address address, String community) {
         CommunityTarget<Address> target = new CommunityTarget<>();
-
-        // Set the address of the SNMP agent (device)
         target.setAddress(address);
-
-        // Set the community string for authentication (commonly "public" for read-only access)
-        target.setCommunity(new OctetString(Comunity_string));
-
-        // Set the number of retries in case the request fails (2 retries)
+        target.setCommunity(new OctetString(community));
         target.setRetries(2);
-
-        // Set the timeout in seconds for receiving a response (2 seconds)
-        target.setTimeout(2);
-
-        // Set the SNMP version (SNMPv2c in this case)
+        target.setTimeout(2000);
         target.setVersion(SnmpConstants.version2c);
         return target;
     }
