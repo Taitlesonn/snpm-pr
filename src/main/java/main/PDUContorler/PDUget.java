@@ -24,34 +24,69 @@ public class PDUget {
 
 
         // Creating PDU get
-        PDU pdu = new PDU();
+        PDU pdu1 = new PDU();
+        PDU pdu2 = new PDU();
+        PDU pdu3 = new PDU();
+        PDU pdu4 = new PDU();
 
         String[] oids = JsonControler.get_oids_list(gson, path);
         assert oids != null;
         int lengh = oids.length;
 
+        int cal = 0;
+        int q = 0;
+        if (lengh > 8){
+            System.err.println("To mach oids");
+        }
         for (int i : id) {
             // Checking if it is in the index
             if (i > lengh || i < 0) {
                 System.out.println("Out of index oid");
                 break;
             }
-            // Ading OIDS to pdu
-            pdu.add(new VariableBinding(new OID(oids[i])));
+            if (cal == 2){
+                q += 1;
+                cal = 0;
+            }
+            switch (q){
+                case   0 -> {
+                    pdu1.add(new VariableBinding(new OID(oids[i])));
+                }case  1 ->{
+                    pdu2.add(new VariableBinding(new OID(oids[i])));
+                }case  2 -> {
+                    pdu3.add(new VariableBinding(new OID(oids[i])));
+                }case  3 -> {
+                    pdu4.add(new VariableBinding(new OID(oids[i])));
+                }
+            }
+            cal +=1;
+
         }
 
         // Sending GET
         try {
-            ResponseEvent event = snmp.send(pdu, target);
-            if (event != null && event.getResponse() != null) {
-                PDU responserPDU = event.getResponse();
-
-                for (VariableBinding vb : responserPDU.getVariableBindings()) {
-                    //Implementacja zapisu odpowiediz
-                    System.out.println(vb.getOid() + " = " + vb.getVariable());
+            for (int i = 0; i < q; i++){
+                ResponseEvent event = null;
+                if (i == 0){
+                     event = snmp.send(pdu1, target);
+                } else if (i == 1) {
+                    event = snmp.send(pdu2, target);
+                } else if (i == 2) {
+                    event = snmp.send(pdu3, target);
+                } else if (i == 3) {
+                    event = snmp.send(pdu4, target);
                 }
-            } else {
-                System.out.println("No response from the SNMP agent or an error occurred form: " + address);
+
+                if (event != null && event.getResponse() != null) {
+                    PDU responserPDU = event.getResponse();
+
+                    for (VariableBinding vb : responserPDU.getVariableBindings()) {
+                        //Implementacja zapisu odpowiediz
+                        System.out.println(vb.getOid() + " = " + vb.getVariable());
+                    }
+                } else {
+                    System.out.println("No response from the SNMP agent or an error occurred form: " + address);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
