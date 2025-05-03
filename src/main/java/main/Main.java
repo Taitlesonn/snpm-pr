@@ -4,7 +4,7 @@ package main;
 
 import main.json.JsonControler;
 import org.snmp4j.smi.GenericAddress;
-
+import main.PDUContorler.*;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -37,8 +37,7 @@ public class Main {
             while (true) {
                 for (String address : Objects.requireNonNull(JsonControler.get_ip_list(gson, path))) {
                     try {
-                        main.PDUController.PDUget PDUget = null;
-                        PDUget.get(GenericAddress.parse(address), udpControler.getSnmp(), Objects.requireNonNull(JsonControler.get_oids(gson, path)), "public", gson, path);
+                        PDUget.get(GenericAddress.parse(address), udpControler.getSnmp(), Objects.requireNonNull(JsonControler.get_oids(gson, path)), "public", gson, path, 2);
                         Thread.sleep(1000);
                     } catch (IOException e) {
                         System.err.println("Error sending GET to:" + address);

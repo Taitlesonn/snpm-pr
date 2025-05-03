@@ -1,4 +1,4 @@
-package main.PDUController;
+package main.PDUContorler;
 
 import com.google.gson.Gson;
 import main.json.JsonControler;
@@ -20,20 +20,22 @@ public class PDUget {
 
     /**
      * Wysyła zapytania SNMP GET w partiach po заданej liczbie OID-ów
-     *
-     * @param address         adres SNMP agent
-     * @param snmp            instancja Snmp
-     * @param indices         tablica indeksów OID-ów do pobrania
+     * @param address adres SNMP agent
+     * @param snmp instancja Snmp
+     * @param indices tablica indeksów OID-ów do pobrania
      * @param communityString wspólnota SNMP
-     * @param gson            instancja Gson
-     * @param path            ścieżka do pliku JSON z listą OID-ów
+     * @param gson instancja Gson
+     * @param path ścieżka do pliku JSON z listą OID-ów
+     * @param batchSize liczba OID-ów w jednym zapytaniu
      */
     public static void get(Address address,
                            Snmp snmp,
                            int[] indices,
                            String communityString,
                            Gson gson,
-                           String path) throws IOException {
+                           String path,
+                           int batchSize
+    ) throws IOException {
         // Przygotowanie targeta SNMP
         CommunityTarget<Address> target = createTarget(address, communityString);
 
