@@ -35,7 +35,7 @@ public class PDUget {
 
         int cal = 0;
         int q = 0;
-        if (lengh > 8){
+        if (lengh >= 8){
             System.err.println("To mach oids");
         }
         for (int i : id) {
