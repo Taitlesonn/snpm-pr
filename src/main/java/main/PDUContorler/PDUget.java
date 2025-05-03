@@ -27,6 +27,7 @@ public class PDUget {
         PDU pdu = new PDU();
 
         String[] oids = JsonControler.get_oids_list(gson, path);
+        assert oids != null;
         int lengh = oids.length;
 
         for (int i : id) {

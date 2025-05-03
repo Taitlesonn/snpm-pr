@@ -19,8 +19,7 @@ public class System_l {
             System_l.type = true;
         }else if(os.contains("nix") || os.contains("nux") || os.contains("mac")){
             System_l.type = false;
-        }else{
-            System.out.println("Can't run hear");
+        }else{System.out.println("Can't run hear");
             System.exit(1);
         }
         //DB
