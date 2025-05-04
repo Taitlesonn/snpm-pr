@@ -73,7 +73,7 @@ public class PDUget {
                         File log = new File(path+ "\\src\\main\\java\\main\\json\\logs\\log.log");
 
                         try (FileWriter writer = new FileWriter(log, true)){
-                            writer.write(data+ ": Brak odpowiedzi od agenta SNMP: " + address);
+                            writer.write(data+ ": Brak odpowiedzi od agenta SNMP: " + address + "\n");
                         }catch (IOException e2){
                             e2.printStackTrace();
                         }
@@ -81,18 +81,22 @@ public class PDUget {
                         File log = new File(path + "/src/main/java/main/json/logs/log.log");
 
                         try (FileWriter writer = new FileWriter(log, true)){
-                            writer.write(data+ ": Brak odpowiedzi od agenta SNMP: " + address);
+                            writer.write(data+ ": Brak odpowiedzi od agenta SNMP: " + address + "\n");
                         }catch (IOException e2){
                             e2.printStackTrace();
                         }
                     }
                 }
             } catch (IOException e) {
+                LocalDateTime now = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String data = now.format(formatter);
+
                 if (System_l.get_t()){
                     File log = new File(path+ "\\src\\main\\java\\main\\json\\logs\\log.log");
 
                     try (FileWriter writer = new FileWriter(log, true)){
-                        writer.write("Błąd podczas wysyłania PDU: " + e.getMessage());
+                        writer.write(data+ ": Błąd podczas wysyłania PDU: " + e.getMessage() + "\n");
                     }catch (IOException e2){
                         e2.printStackTrace();
                     }
@@ -100,13 +104,11 @@ public class PDUget {
                     File log = new File(path + "/src/main/java/main/json/logs/log.log");
 
                     try (FileWriter writer = new FileWriter(log, true)){
-                        writer.write("Błąd podczas wysyłania PDU: " + e.getMessage());
+                        writer.write(data+ ": Błąd podczas wysyłania PDU: " + e.getMessage() + "\n");
                     }catch (IOException e2){
                         e2.printStackTrace();
                     }
                 }
-
-                System.err.println("Błąd podczas wysyłania PDU: " + e.getMessage());
             }
         }
     }
