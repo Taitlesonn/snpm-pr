@@ -63,6 +63,30 @@ public class PDUget {
                 ResponseEvent event = snmp.send(pdu, target);
                 if (event != null && event.getResponse() != null) {
                     for (VariableBinding vb : event.getResponse().getVariableBindings()) {
+                        if (new String(String.valueOf(vb.getVariable())).equals("noSuchObject")){
+                            LocalDateTime now = LocalDateTime.now();
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                            String data = now.format(formatter);
+
+                            if (System_l.get_t()){
+                                File log = new File(path+ "\\src\\main\\java\\main\\json\\logs\\log.log");
+
+                                try (FileWriter writer = new FileWriter(log, true)){
+                                    writer.write(data+ ": Not a object" + address + "\n");
+                                }catch (IOException e2){
+                                    e2.printStackTrace();
+                                }
+                            }else{
+                                File log = new File(path + "/src/main/java/main/json/logs/log.log");
+
+                                try (FileWriter writer = new FileWriter(log, true)){
+                                    writer.write(data+ ": Not a object" + address + "\n");
+                                }catch (IOException e2){
+                                    e2.printStackTrace();
+                                }
+                            }
+                        }
+
                         System.out.println(vb.getOid() + " = " + vb.getVariable());
                     }
                 } else {
