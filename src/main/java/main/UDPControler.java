@@ -1,12 +1,16 @@
 package main;
 
 import org.snmp4j.*;
-import org.snmp4j.smi.Address;
-import org.snmp4j.smi.GenericAddress;
-import org.snmp4j.smi.UdpAddress;
+import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.smi.*;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 public class UDPControler {
@@ -14,6 +18,7 @@ public class UDPControler {
     private TransportMapping<UdpAddress> transport;
     private Snmp snmp;
     private CountDownLatch initLatch = new CountDownLatch(1);
+    private final Map<OID, Variable> mibStore = new ConcurrentHashMap<>();
 
 
 
@@ -45,16 +50,105 @@ public class UDPControler {
 
                     switch (pdu.getType()) {
                         case PDU.GET -> {
-                            // Implementation of reading data from MIB for GET.
+                            PDU response = new PDU(PDU.RESPONSE, (List<? extends VariableBinding>) pdu.getRequestID());
+                            for (VariableBinding vb : pdu.getVariableBindings()) {
+                                OID oid = vb.getOid();
+                                Variable val = mibStore.get(oid);
+                                if (val != null) {
+                                    response.add(new VariableBinding(oid, val));
+                                } else {
+                                    // noSuchObject
+                                    response.add(new VariableBinding(
+                                            oid,
+                                            new org.snmp4j.smi.Null()
+                                    ));
+                                }
+                            }
+                            CommunityTarget target = new CommunityTarget();
+                            target.setAddress(peerAddress);
+                            target.setCommunity(new OctetString("public"));
+                            target.setVersion(SnmpConstants.version2c);
+                            try {
+                                snmp.send(response, target);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                         case PDU.GETNEXT -> {
-                            // Implementation of MIB tree traversal.
+                            PDU response = new PDU(PDU.RESPONSE, (List<? extends VariableBinding>) pdu.getRequestID());
+                            // posortowane klucze MIB
+                            List<OID> sorted = new ArrayList<>(mibStore.keySet());
+                            Collections.sort(sorted);
+                            for (VariableBinding vb : pdu.getVariableBindings()) {
+                                OID oid = vb.getOid();
+                                // znajdź najmniejszy OID > żądanego
+                                OID next = null;
+                                for (OID cand : sorted) {
+                                    if (cand.compareTo(oid) > 0) {
+                                        next = cand;
+                                        break;
+                                    }
+                                }
+                                if (next != null) {
+                                    response.add(new VariableBinding(next, mibStore.get(next)));
+                                } else {
+                                    // koniec drzewa
+                                    response.add(new VariableBinding(
+                                            oid,
+                                            new org.snmp4j.smi.Null()
+                                    ));
+                                }
+                            }
+                            CommunityTarget target = new CommunityTarget();
+                            target.setAddress(peerAddress);
+                            target.setCommunity(new OctetString("public"));
+                            target.setVersion(SnmpConstants.version2c);
+                            try {
+                                snmp.send(response, target);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                         case PDU.SET -> {
-                            // Implementation of setting values in MIB.
+                            PDU response = new PDU(PDU.RESPONSE, (List<? extends VariableBinding>) pdu.getRequestID());
+                            int idx = 1;
+                            for (VariableBinding vb : pdu.getVariableBindings()) {
+                                OID oid = vb.getOid();
+                                Variable newVal = vb.getVariable();
+                                if (!mibStore.containsKey(oid)) {
+                                    // nieznana nazwa → noSuchName
+                                    response.setErrorStatus(PDU.noSuchName);
+                                    response.setErrorIndex(idx);
+                                    break;
+                                }
+                                // zapis do MIB
+                                mibStore.put(oid, newVal);
+                                response.add(new VariableBinding(oid, newVal));
+                                idx++;
+                            }
+                            CommunityTarget target = new CommunityTarget();
+                            target.setAddress(peerAddress);
+                            target.setCommunity(new OctetString("public"));
+                            target.setVersion(SnmpConstants.version2c);
+                            try {
+                                snmp.send(response, target);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                         default -> {
-                            // Unsupported PDU type.
+                            // wszystkie inne typy → genErr
+                            PDU response = new PDU(PDU.RESPONSE, (List<? extends VariableBinding>) pdu.getRequestID());
+                            response.setErrorStatus(PDU.genErr);
+                            CommunityTarget target = new CommunityTarget();
+                            target.setAddress(peerAddress);
+                            target.setCommunity(new OctetString("public"));
+                            target.setVersion(SnmpConstants.version2c);
+                            try {
+                                snmp.send(response, target);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     }
 
