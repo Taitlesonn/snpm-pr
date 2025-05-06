@@ -12,6 +12,7 @@ import org.snmp4j.smi.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -58,8 +59,12 @@ public class PDUget {
                             // logujemy brak wartości
                             logMessage(path, address, "Brak wartości dla OID " + vb.getOid());
                         } else {
-                            // normalna wartość
-                            System.out.println(vb.getOid() + " = " + var);
+                            // konwersja wszystkich parametrów do Stringów
+                            String ipStr    = address.toString();
+                            String oidStr   = vb.getOid().toString();
+                            String valStr   = var.toString();
+                            String comment  = ""; // lub dowolny opis
+                            System_l.insertMibLog(ipStr, oidStr, valStr, comment);
                         }
                     }
                 } else {
@@ -69,6 +74,8 @@ public class PDUget {
             } catch (IOException e) {
                 // błąd wysyłki PDU
                 logMessage(path, address, "Błąd podczas wysyłania PDU: " + e.getMessage());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         }
     }
