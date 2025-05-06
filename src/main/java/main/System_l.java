@@ -3,6 +3,7 @@ package main;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class System_l {
@@ -40,6 +41,39 @@ public class System_l {
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Wstawia nowy wpis do tabeli mib_objects.
+     *
+     * @param ipAddress IPv4 urządzenia (np. "192.168.1.1")
+     * @param oid        OID SNMP (np. "1.3.6.1.2.1.1.1.0")
+     * @param val        Wartość jako tekst (String)
+     * @param comment    Komentarz/opis
+     * @throws SQLException gdy wystąpi błąd SQL
+     */
+    public static void insertMibLog(String ipAddress, String oid, String val, String comment) throws SQLException {
+        String sql = """
+            INSERT INTO mib_objects (ip_address, oid, val, comment)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT (ip_address, oid) DO NOTHING
+            """;
+
+        try (Connection conn = getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, ipAddress);
+            pst.setString(2, oid);
+            pst.setString(3, val);
+            pst.setString(4, comment);
+
+            int affected = pst.executeUpdate();
+//            if (affected > 0) {
+//                System.out.printf("Wpis dodany: %s / %s%n", ipAddress, oid);
+//            } else {
+//                System.out.printf("Wpis już istnieje: %s / %s%n", ipAddress, oid);
+//            }
         }
     }
 
