@@ -68,29 +68,29 @@ public class System_l {
      * @param comment    Komentarz/opis
      * @throws SQLException gdy wystąpi błąd SQL
      */
-    public static void insertMibLog(String ipAddress, String oid, String val, String comment) throws SQLException {
+    public static void insertMibLog(String ipAddress,
+                                    String oid,
+                                    String val,
+                                    String comment) throws SQLException {
         String sql = """
-            INSERT INTO mib_objects (ip_address, oid, val, comment)
-            VALUES (?, ?, ?, ?)
-            ON CONFLICT (ip_address, oid) DO NOTHING
-            """;
+        INSERT INTO mib_objects (ip_address, oid, val, comment)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT (ip_address, oid) DO NOTHING
+        """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement pst = conn.prepareStatement(sql)) {
+        // POBIERAMY STATYCZNE, JUŻ OTWARTE POŁĄCZENIE
+        Connection conn = getConnection();
 
+        // TYLKO PST ZAMYKAMY W TRY-WITH-RESOURCES
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setString(1, ipAddress);
             pst.setString(2, oid);
             pst.setString(3, val);
             pst.setString(4, comment);
-
-            int affected = pst.executeUpdate();
-//            if (affected > 0) {
-//                System.out.printf("Wpis dodany: %s / %s%n", ipAddress, oid);
-//            } else {
-//                System.out.printf("Wpis już istnieje: %s / %s%n", ipAddress, oid);
-//            }
+            pst.executeUpdate();
         }
     }
+
 
     public static Connection getConnection(){
         return System_l.connection;
