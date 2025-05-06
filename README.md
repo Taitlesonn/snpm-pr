@@ -120,9 +120,4 @@ Upewnij się, że w `pom.xml` masz dodany dependency:
 
 ## Licencja
 
-Brak pliku LICENSE — wszystkie prawa zastrzeżone. Jeśli chcesz otworzyć kod (np. na warunkach MIT lub Apache 2.0), dodaj odpowiedni plik `LICENSE`.
-
-```
-
-Daj znać, jeśli potrzebujesz jeszcze przykładów plików JSON lub fragmentów kodu!
-```
+Brak pliku LICENSE 
