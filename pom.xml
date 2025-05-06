@@ -34,6 +34,8 @@
     </dependencies>
 
     <build>
+
+
         <plugins>
             <!-- Maven Shade Plugin for creating an uber JAR -->
             <plugin>
