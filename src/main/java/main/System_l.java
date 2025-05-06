@@ -1,10 +1,7 @@
 package main;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class System_l {
     private static boolean type;
@@ -27,6 +24,7 @@ public class System_l {
         try {
             System_l.connection = DriverManager.getConnection(System_l.url, System_l.user, System_l.password);
             System.out.println("DataBes connected suces");
+            ensureMibTable();
         }catch (SQLException e){
             e.printStackTrace();
             System.exit(1);
@@ -41,6 +39,23 @@ public class System_l {
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /** Tworzy tabelę mib_objects, jeśli jej nie ma */
+    private static void ensureMibTable() throws SQLException {
+        String ddl = """
+            CREATE TABLE IF NOT EXISTS public.mib_objects (
+                ip_address TEXT NOT NULL,
+                oid        TEXT NOT NULL,
+                val        TEXT,
+                comment    TEXT,
+                PRIMARY KEY (ip_address, oid)
+            );
+            """;
+        try (Statement st = connection.createStatement()) {
+            st.execute(ddl);
+            System.out.println("Tabela mib_objects jest gotowa.");
         }
     }
 
