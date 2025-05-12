@@ -1,8 +1,3 @@
-Thought for a second
-
-
-Poniżej całościowa, zaktualizowana wersja pliku **README.md** w języku polskim, z uwzględnieniem, że aplikacja działa na Windows i Linux:
-
 
 # SNMP Server dla Windows i Linux
 
